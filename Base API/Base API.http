@@ -1,0 +1,66 @@
+@Base_API_HostAddress = http://localhost:5000
+@Base_API_Url = api
+@API_Version = v1
+@APIv1 = {{Base_API_HostAddress}}/{{Base_API_Url}}/{{API_Version}}
+@Token = Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1bmlxdWVfbmFtZSI6IjIiLCJlbWFpbCI6ImFiY0BnbWFpbC5jb20iLCJyb2xlIjoiVXNlciIsIm5iZiI6MTcwMjk5MDc5NywiZXhwIjoxNzAyOTk0Mzk3LCJpYXQiOjE3MDI5OTA3OTd9.TEZb8WLvLixyH8QxKvt5blaNCv612Ijygd9y2nlQUcg
+
+###
+
+POST {{APIv1}}/auth/signup
+Accept: application/json
+Content-Type: application/json
+Accept-Language: en-US,en;q=0.5
+
+{
+    "email": "abc@gmail.com",
+    "password": "Abcd@1234"
+}
+
+###
+
+POST {{APIv1}}/auth/login
+Accept: application/json
+Content-Type: application/json
+Accept-Language: en-US,en;q=0.5
+
+{
+    "email": "abc@gmail.com",
+    "password": "Abcd@1234"
+}
+
+###
+
+GET {{APIv1}}/profile
+Accept: application/json
+Accept-Language: en-US,en;q=0.5
+Authorization: {{Token}}
+
+###
+
+POST {{APIv1}}/profile
+Accept: application/json
+Content-Type: application/json
+Accept-Language: en-US,en;q=0.5
+Authorization: {{Token}}
+
+{
+    "fullName": "Test name",
+    "address": "Test address",
+    "city": "Test city",
+    "state": "Test state",
+    "pincode": "Test pincode"
+}
+
+####
+
+POST {{APIv1}}/profile/avatar
+Accept: */*
+Authorization: {{Token}}
+Content-Type: multipart/form-data; boundary=abcd
+
+--abcd
+Content-Disposition: form-data; name="file"; filename="1.png"
+
+< ./1.png
+--abcd--
+
