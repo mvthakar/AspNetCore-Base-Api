@@ -25,13 +25,13 @@ public class UploadAvatarService
         var user = await database.Users.Include(u => u.Profile).FirstOrDefaultAsync(u => u.Id == userId);
         
         if (user is null)
-            return Result.Fail(Errors.NotFound);
+            return Result.NotFoundError();
         if (user.Profile is null)
-            return Result.Fail(Errors.NotFound.WithMessage("Profile not found for this user"));
+            return Result.NotFoundError("Profile not found for this user");
 
         var validationResult = await validator.ValidateAsync(request);
         if (!validationResult.IsValid)
-            return Result.Fail(Errors.Validation.WithResult(validationResult));
+            return Result.ValidationError(validationResult);
 
         var avatarFolder = Path.Join(environment.WebRootPath, Folders.Avatars);
         string avatarFileName;

@@ -1,5 +1,4 @@
-﻿using BaseAPI.Common.Constants;
-using BaseAPI.Common.Utilities;
+﻿using BaseAPI.Common.Utilities;
 using BaseAPI.Database;
 
 using Microsoft.EntityFrameworkCore;
@@ -17,7 +16,7 @@ public class GetProfileService(DatabaseContext database) : IGetProfileService
     {
         var profile = await database.Profiles.FirstOrDefaultAsync(p => p.UserId == userId);
         if (profile is null)
-            return Result.Fail(Errors.NotFound);
+            return Result.NotFoundError();
 
         return Result.Success(profile.AsResponse());
     }

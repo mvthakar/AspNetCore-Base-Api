@@ -1,4 +1,4 @@
-﻿using BaseAPI.Common.Constants;
+﻿using FluentValidation.Results;
 
 namespace BaseAPI.Common.Utilities;
 
@@ -24,6 +24,11 @@ public class Result : ResultBase
     public static Result Success() => new() { IsSuccess = true };
     public static Result<T> Success<T>(T value) where T : class => new() { IsSuccess = true, Value = value };
 
-    public static Result Fail() => new();
-    public static Result Fail(Error error) => new() { Error = error };
+    private static Result Fail(Error error) => new() { Error = error };
+
+    public static Result ValidationError(ValidationResult validationResult) => Fail(new ValidationError().WithResult(validationResult));
+    public static Result InternalServerError(string? message = null) => Fail(new InternalServerError().WithMessage(message));
+    public static Result UnauthorizedError(string? message = null) => Fail(new UnauthorizedError().WithMessage(message));
+    public static Result ConflictError(string? message = null) => Fail(new ConflictError().WithMessage(message));
+    public static Result NotFoundError(string? message = null) => Fail(new NotFoundError().WithMessage(message));
 }

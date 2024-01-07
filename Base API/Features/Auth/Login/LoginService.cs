@@ -1,5 +1,4 @@
-﻿using BaseAPI.Common.Constants;
-using BaseAPI.Common.Utilities;
+﻿using BaseAPI.Common.Utilities;
 using BaseAPI.Database;
 using BaseAPI.Database.Models.Identity;
 using BaseAPI.Features.Auth.Token;
@@ -31,18 +30,18 @@ public class LoginService(
     {
         ValidationResult validationResult = await validator.ValidateAsync(request);
         if (!validationResult.IsValid)
-            return Result.Fail(Errors.Validation.WithResult(validationResult));
+            return Result.ValidationError(validationResult);
 
         var foundUser = await userManager.FindByEmailAsync(request.Email);
         if (foundUser is null || await userManager.IsLockedOutAsync(foundUser))
-            return Result.Fail(Errors.Unauthorized.WithMessage("Wrong email or password"));
+            return Result.UnauthorizedError("Wrong email or password");
 
         if (!await userManager.IsEmailConfirmedAsync(foundUser))
-            return Result.Fail(Errors.Unauthorized.WithMessage("Email is not verified"));
+            return Result.UnauthorizedError("Email is not verified");
 
         var result = await signInManager.PasswordSignInAsync(request.Email, request.Password, false, false);
         if (!result.Succeeded)
-            return Result.Fail(Errors.Unauthorized.WithMessage("Wrong email or password"));
+            return Result.UnauthorizedError("Wrong email or password");
 
         var authProvider = await database.AuthProviders.FirstAsync(provider => provider.Name == Providers.Email);
         var tokenType = await database.TokenTypes.FirstAsync(tokenType => tokenType.Name == TokenTypes.RefreshToken);

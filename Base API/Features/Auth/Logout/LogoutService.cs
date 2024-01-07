@@ -1,5 +1,4 @@
-﻿using BaseAPI.Common.Constants;
-using BaseAPI.Common.Utilities;
+﻿using BaseAPI.Common.Utilities;
 using BaseAPI.Database;
 
 using FluentValidation;
@@ -23,11 +22,11 @@ public class LogoutService(
     {
         var validationResult = await validator.ValidateAsync(request);
         if (!validationResult.IsValid)
-            return Result.Fail(Errors.Validation.WithResult(validationResult));
+            return Result.ValidationError(validationResult);
 
         var userToken = await database.UserTokens.FirstOrDefaultAsync(ut => ut.UserId == userId);
         if (userToken is null)
-            return Result.Fail(Errors.Unauthorized);
+            return Result.UnauthorizedError();
 
         database.UserTokens.Remove(userToken);
         await database.SaveChangesAsync();
@@ -38,6 +37,6 @@ public class LogoutService(
     public async Task<Result> LogoutAllAsync(long userId)
     {
         var numberOfDeletedTokens = await database.UserTokens.Where(token => token.UserId == userId).ExecuteDeleteAsync();
-        return numberOfDeletedTokens > 0 ? Result.Success() : Result.Fail(Errors.Unauthorized);
+        return numberOfDeletedTokens > 0 ? Result.Success() : Result.UnauthorizedError();
     }
 }

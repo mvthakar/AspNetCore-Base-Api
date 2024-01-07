@@ -1,5 +1,4 @@
-﻿using BaseAPI.Common.Constants;
-using BaseAPI.Common.Utilities;
+﻿using BaseAPI.Common.Utilities;
 using BaseAPI.Database;
 using BaseAPI.Database.Models.Identity;
 
@@ -28,11 +27,11 @@ public class SignUpService(
     {
         var validationResult = await validator.ValidateAsync(request);
         if (!validationResult.IsValid)
-            return Result.Fail(Errors.Validation.WithResult(validationResult));
+            return Result.ValidationError(validationResult);
 
         var existingUser = await userManager.FindByEmailAsync(request.Email);
         if (existingUser is not null)
-            return Result.Fail(Errors.Conflict.WithMessage("Email is already in use"));
+            return Result.ConflictError("Email is already in use");
 
         var user = request.AsUser();
         user.AuthProvider = await database.AuthProviders.FirstAsync(provider => provider.Name == "Email");
@@ -42,7 +41,7 @@ public class SignUpService(
         if (!result.Succeeded)
         {
             var message = result.Errors.First().Description;
-            return Result.Fail(Errors.InternalServer.WithMessage(message));
+            return Result.InternalServerError(message);
         }
 
         await userManager.AddToRoleAsync(user, Roles.User);

@@ -1,5 +1,4 @@
-﻿using BaseAPI.Common.Constants;
-using BaseAPI.Common.Utilities;
+﻿using BaseAPI.Common.Utilities;
 using BaseAPI.Database;
 
 using FluentValidation;
@@ -23,7 +22,7 @@ public class AddOrUpdateProfileService(
     {
         var validationResult = await validator.ValidateAsync(request);
         if (!validationResult.IsValid)
-            return Result.Fail(Errors.Validation.WithResult(validationResult));
+            return Result.ValidationError(validationResult);
 
         var profile = await database.Profiles.FirstOrDefaultAsync(p => p.UserId == userId) ?? new Database.Models.Profile();
         profile.UpdateFrom(userId, request);

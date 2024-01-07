@@ -1,5 +1,4 @@
-﻿using BaseAPI.Common.Constants;
-using BaseAPI.Common.Utilities;
+﻿using BaseAPI.Common.Utilities;
 using BaseAPI.Database;
 
 using FluentValidation;
@@ -25,11 +24,11 @@ public class RefreshTokenService(
     {
         var validationResult = await validator.ValidateAsync(request);
         if (!validationResult.IsValid)
-            return Result.Fail(Errors.Validation.WithResult(validationResult));
+            return Result.ValidationError(validationResult);
 
         var user = await database.Users.FirstOrDefaultAsync(u => u.Id == userId);
         if (user is null)
-            return Result.Fail(Errors.NotFound);
+            return Result.NotFoundError();
 
         var tokenInDatabase = await database.UserTokens.Include(t => t.AuthProvider).Include(t => t.TokenType).FirstOrDefaultAsync(t =>
             t.AuthProvider.Name == Providers.Email &&
@@ -39,7 +38,7 @@ public class RefreshTokenService(
         );
 
         if (tokenInDatabase is null)
-            return Result.Fail(Errors.Unauthorized);
+            return Result.UnauthorizedError();
 
         var accessToken = await tokenService.GenerateAccessToken(user);
         var refreshToken = tokenService.GenerateRefreshToken(out DateTime issuedOn, out DateTime expiresOn);
