@@ -5,7 +5,6 @@ using BaseAPI.Database.Models.Identity;
 using FluentValidation;
 
 using Microsoft.AspNetCore.Identity;
-using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 
 using static BaseAPI.Common.Constants.Auth;
@@ -18,9 +17,9 @@ public interface ISignUpService
 }
 
 public class SignUpService(
-    [FromServices] IValidator<SignUpRequest> validator, 
-    [FromServices] UserManager<User> userManager, 
-    [FromServices] DatabaseContext database
+    IValidator<SignUpRequest> validator,
+    UserManager<User> userManager,
+    DatabaseContext database
 ) : ISignUpService
 {
     public async Task<Result<SignUpResponse>> SignUpAsync(SignUpRequest request)

@@ -1,11 +1,11 @@
 ﻿using System.Security.Claims;
 
 using BaseAPI.Common.Extensions;
+using BaseAPI.Common.Utilities;
 
 using Microsoft.AspNetCore.Mvc;
 
 using static BaseAPI.Common.Constants.Auth;
-using BaseAPI.Common.Utilities;
 
 namespace BaseAPI.Features.Auth.Logout;
 
