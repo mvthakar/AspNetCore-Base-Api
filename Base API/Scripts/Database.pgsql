@@ -1,6 +1,6 @@
-CREATE DATABASE "brokerhood";
-CREATE USER "brokerhood_user" WITH ENCRYPTED PASSWORD 'Brokerhood@123';
+CREATE DATABASE "app_db";
+CREATE USER "app_db_user" WITH ENCRYPTED PASSWORD 'AppDbUser@123';
 
-GRANT ALL PRIVILEGES ON DATABASE "brokerhood" TO "brokerhood_user";
-ALTER DATABASE "brokerhood" OWNER TO "brokerhood_user";
+GRANT ALL PRIVILEGES ON DATABASE "app_db" TO "app_db_user";
+ALTER DATABASE "app_db" OWNER TO "app_db_user";
 
