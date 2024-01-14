@@ -65,20 +65,31 @@ public static class CommonRegistry
         services.AddAuthorization(options =>
         {
             var defaultPolicy = new AuthorizationPolicyBuilder()
-                .RequireAuthenticatedUser()
                 .AddAuthenticationSchemes(Auth.Jwt.Default)
+                .RequireAuthenticatedUser()
                 .Build();
 
             var allowExpiredJwtPolicy = new AuthorizationPolicyBuilder()
-                .RequireAuthenticatedUser()
                 .AddAuthenticationSchemes(Auth.Jwt.AllowExpired)
+                .RequireAuthenticatedUser()
+                .Build();
+
+            var requireAdminPolicy = new AuthorizationPolicyBuilder()
+                .AddAuthenticationSchemes(Auth.Jwt.Default)
+                .RequireAuthenticatedUser()
+                .RequireRole(Auth.Roles.Admin)
+                .Build();
+
+            var requireUserPolicy = new AuthorizationPolicyBuilder()
+                .AddAuthenticationSchemes(Auth.Jwt.Default)
+                .RequireAuthenticatedUser()
+                .RequireRole(Auth.Roles.User)
                 .Build();
 
             options.AddPolicy(Auth.Jwt.Default, defaultPolicy);
             options.AddPolicy(Auth.Jwt.AllowExpired, allowExpiredJwtPolicy);
-
-            options.AddPolicy(Auth.Roles.Admin, options => options.RequireRole(Auth.Roles.Admin));
-            options.AddPolicy(Auth.Roles.User, options => options.RequireRole(Auth.Roles.User));
+            options.AddPolicy(Auth.Roles.Admin, requireAdminPolicy);
+            options.AddPolicy(Auth.Roles.User, requireUserPolicy);
 
             options.DefaultPolicy = options.GetPolicy(Auth.Jwt.Default)!;
         });
