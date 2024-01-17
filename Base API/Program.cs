@@ -2,8 +2,6 @@ using BaseAPI.Common;
 using BaseAPI.Common.Settings;
 using BaseAPI.Database;
 using BaseAPI.Database.Models.Identity;
-using BaseAPI.Features.Auth;
-using BaseAPI.Features.Profile;
 using BaseAPI.Middleware;
 
 using Microsoft.AspNetCore.Identity;
@@ -17,13 +15,9 @@ builder.Host.UseSerilog();
 builder.Services.AddProblemDetails();
 
 // ----Add services here-----
-
 builder.Services.AddConfigurations();
-
 builder.Services.AddCommonServices();
-builder.Services.AddAuthServices();
-builder.Services.AddProfileServices();
-
+builder.Services.AddServicesFromAssembly();
 // --------------------------
 
 builder.Services.AddDbContext<DatabaseContext>();
@@ -44,13 +38,7 @@ var app = builder.Build();
 await app.InitializeDatabaseAsync();
 
 app.UseSerilogRequestLogging();
-
-// ----Map endpoints here-----
-
-app.MapAuthEndpoints();
-app.MapProfileEndpoints();
-
-// --------------------------
+app.MapEndpointsFromAssembly();
 
 if (app.Environment.IsDevelopment())
 {

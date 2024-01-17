@@ -1,4 +1,5 @@
-﻿using BaseAPI.Common.Utilities;
+﻿using BaseAPI.Common;
+using BaseAPI.Common.Utilities;
 using BaseAPI.Features.Auth.Login;
 using BaseAPI.Features.Auth.Logout;
 using BaseAPI.Features.Auth.SignUp;
@@ -11,9 +12,9 @@ using static BaseAPI.Common.Constants.Auth;
 
 namespace BaseAPI.Features.Auth;
 
-public static class AuthRegistry
+public class AuthRegistry : IRegistry
 {
-    public static void MapAuthEndpoints(this WebApplication app)
+    public void MapEndpoints(WebApplication app)
     {
         app.MapPost(Api.Url("auth/signup"), SignUpHandler.Handle);
         app.MapPost(Api.Url("auth/login"), LoginHandler.Handle);
@@ -28,7 +29,7 @@ public static class AuthRegistry
         app.MapPost(Api.Url("auth/logout-all"), LogoutHandler.HandleLogoutAll).RequireAuthorization(Jwt.AllowExpired);
     }
 
-    public static IServiceCollection AddAuthServices(this IServiceCollection services)
+    public void AddServices(IServiceCollection services)
     {
         services.AddScoped<ITokenService, TokenService>();
 
@@ -43,7 +44,5 @@ public static class AuthRegistry
 
         services.AddScoped<IValidator<LogoutRequest>, LogoutRequestValidator>();
         services.AddScoped<ILogoutService, LogoutService>();
-
-        return services;
     }
 }

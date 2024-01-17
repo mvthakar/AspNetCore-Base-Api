@@ -7,6 +7,7 @@ using BaseAPI.Common.Settings;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.IdentityModel.Tokens;
+using Microsoft.Win32;
 
 using Serilog;
 
@@ -14,6 +15,30 @@ namespace BaseAPI.Common;
 
 public static class CommonRegistry
 {
+    public static IServiceCollection AddServicesFromAssembly(this IServiceCollection services)
+    {
+        var registires = typeof(Program).Assembly.GetTypes().Where(type => type.GetInterfaces().Contains(typeof(IRegistry)));
+        foreach (var registry in registires)
+        {
+            var instance = Activator.CreateInstance(registry) as IRegistry;
+            instance?.AddServices(services);
+        }
+
+        return services;
+    }
+
+    public static WebApplication MapEndpointsFromAssembly(this WebApplication app)
+    {
+        var registires = typeof(Program).Assembly.GetTypes().Where(type => type.GetInterfaces().Contains(typeof(IRegistry)));
+        foreach (var registry in registires)
+        {
+            var instance = Activator.CreateInstance(registry) as IRegistry;
+            instance?.MapEndpoints(app);
+        }
+
+        return app;
+    }
+
     public static IServiceCollection AddCommonServices(this IServiceCollection services)
     {
         services.AddScoped<IEmailService, EmailService>();
@@ -30,7 +55,7 @@ public static class CommonRegistry
         return services;
     }
 
-    public static void AddJwtAuthentication(this IServiceCollection services)
+    public static IServiceCollection AddJwtAuthentication(this IServiceCollection services)
     {
         static JwtBearerOptions Configure(JwtBearerOptions options, bool validateLifetime)
         {
@@ -58,9 +83,11 @@ public static class CommonRegistry
 
         authBuilder.AddJwtBearer(Auth.Jwt.Default, options => Configure(options, validateLifetime: true));
         authBuilder.AddJwtBearer(Auth.Jwt.AllowExpired, options => Configure(options, validateLifetime: false));
+
+        return services;
     }
 
-    public static void AddJwtAuthorization(this IServiceCollection services)
+    public static IServiceCollection AddJwtAuthorization(this IServiceCollection services)
     {
         services.AddAuthorization(options =>
         {
@@ -93,14 +120,17 @@ public static class CommonRegistry
 
             options.DefaultPolicy = options.GetPolicy(Auth.Jwt.Default)!;
         });
+
+        return services;
     }
 
-    public static void UseSerilog(this ConfigureHostBuilder host)
+    public static ConfigureHostBuilder UseSerilog(this ConfigureHostBuilder host)
     {
         var logger = new LoggerConfiguration()
             .ReadFrom.Configuration(Config.Instance)
             .CreateLogger();
 
         host.UseSerilog(logger);
+        return host;
     }
 }
